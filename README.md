@@ -30,10 +30,9 @@ TBD
 Example
 -------
 ```
-from open_parser import retriever
-biorxiv = retriever.Biorxiv()
-biorxiv.search('uv protection marine habitat')
-biorxiv.get_articles(num_pages=1)
+from open_parser.biorxiv import Biorxiv
+engine = Biorxiv()
+engine.search('uv protection marine habitat', num_pages=1)
 biorxiv.parse_articles()
 biorxiv.save() # Check #home/.open_parser/bioarxiv
 ```
