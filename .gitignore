@@ -41,3 +41,4 @@ output/
 
 # VSCode
 __pycache__
+test/
