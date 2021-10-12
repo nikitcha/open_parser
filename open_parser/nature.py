@@ -6,37 +6,38 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 from .base import Retriever, Article, Meta, ArticleLink
 
-URL = {'base':"https://www.biorxiv.org",
-       'search':"https://www.biorxiv.org/search/{}%20jcode%3Amedrxiv%7C%7Cbiorxiv%20numresults%3A10%20sort%3Arelevance-rank",
+URL = {'base':"https://www.nature.com",
+       'search':"https://www.nature.com/search?q={}&journal=srep,%20ismej,%20ncomms&order=relevance",
         }
 
-class Biorxiv(Retriever):
+class Nature(Retriever):
 
     def __init__(self) -> None:
-        super().__init__(journal='biorxiv', base_url=URL['base'], search_url=URL['search'])
-        self.num_pages = 0
-        self.meta = {'author':'DC.Contributor', 'citation_date':'citation_publication_date','publication_date':'DC.Date', 'doi':'citation_doi','publisher':'DC.Publisher', 'access':'DC.AccessRights','link':'citation_full_html_url','pdf':'citation_pdf_url'}
+        super().__init__(journal='nature', base_url=URL['base'], search_url=URL['search'])
+        self.num_pages = 1
+        self.meta = {
+            'author':'dc.creator', 
+            'citation_date':'citation_online_date',
+            'publication_date':'prism.publicationDate', 
+            'citation_doi':'citation_doi',
+            'publisher':'citation_journal_title', 
+            'article_type':'content.category.contentType',
+            'pdf':'citation_pdf_url',
+            'link':'citation_fulltext_html_url'}
         self.levels = {0:'h2',1:'h3',2:'h4',3:'h5',4:'p'}
 
     def get_num_pages(self, page_soup):
-        page_links = page_soup.find_all("li", {"class": "pager-item"})
-        num_pages = 0
-        if len(page_links) > 0:
-            page_possible_last = page_soup.find("li", {"class": "pager-last"})
-            if page_possible_last is not None:
-                num_pages = int(page_possible_last.text)
-            else:
-                num_pages = int(page_links[-1].text)
-        self.num_pages = num_pages
+        pages = page_soup.find_all('li', {'class':'c-pagination__item'})
+        if len(pages) >= 2:
+            self.num_pages = int(pages[-2].get("data-page"))
                 
     def get_page_links(self, page_soup):
         article_links = []
-        links = page_soup.find_all("a", {"class": "highwire-cite-linked-title"})
-        dois = page_soup.find_all("span", {"class": "highwire-cite-metadata-doi"})
-
-        for link,doi in zip(links, dois):
+        articles = page_soup.find_all('article')
+        for article in articles:
+            link = article.find('a')
             uri = link.get('href')
-            article_links.append(ArticleLink(title=link.text, url=self.base_url+uri, doi=list(doi.children)[1].text.strip()))
+            article_links.append(ArticleLink(title=link.text, url=self.base_url+uri, doi=""))
         return article_links
 
     def search(self, query, max_pages=1):
@@ -76,9 +77,7 @@ class Biorxiv(Retriever):
                 data.update({k:els})
         return Meta(**data)
 
-    def get_sections(self, soup, level=0):
-        # TO DO: Check repeated paragraphs in Parent
-        print('TOOD: Check parent/paragraph logic')
+    def get_sections(self,soup, level=0):
         sections = soup.find_all(self.levels[level])
         if len(sections)==0 and level<4:
             return self.get_sections(soup, level+1)
@@ -87,4 +86,20 @@ class Biorxiv(Retriever):
         if level==4:
             return [s.text for s in sections]
         else:
-            return [{'title':sec.text, 'text':self.get_sections(sec.parent, level+1)} for sec in sections]
+            parse = []
+            sections = [section for section in sections if section.get('id')]
+            for i in range(len(sections)):
+                div = soup.find_all('div',{'id':sections[i].get('id')+'-content'})
+                if not div:
+                    parent = str(sections[i].parent)
+                    start = str(sections[i])
+                    div = parent[parent.rfind(start):]
+                    if i==len(sections)-1:
+                        div = BeautifulSoup(div, "lxml")
+                    else:
+                        end = str(sections[i+1])
+                        div = BeautifulSoup(div[:div.rfind(end)], "lxml")
+                else:
+                    div=div[0]
+                parse.append({'title':sections[i].text, 'text':self.get_sections(div, level+1)})
+            return parse

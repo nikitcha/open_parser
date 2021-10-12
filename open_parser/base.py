@@ -11,12 +11,13 @@ from bs4 import BeautifulSoup, BeautifulStoneSoup
 class Meta:
     author:list[str]
     doi:str
-    pdf:str
     link:str
-    citation_date:datetime.date
-    publication_date:datetime.date
+    citation_date:str
+    publication_date:str
     publisher:str
-    access:str=""
+    pdf:str=""
+    access:str="open"
+    article_type:str='article'
 
 @dataclass
 class Reference:
@@ -31,6 +32,7 @@ class Reference:
 class ArticleLink(object):
     title:str
     url:str
+    doi:str
 
 @dataclass
 class Article(object):
