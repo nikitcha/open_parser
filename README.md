@@ -42,7 +42,7 @@ engines = [Biorxiv, Nature, PNAS, PLOS]
 
 for engine in engines:
     parser = engine()
-    parser.search("aquatic photoprotection", num_pages=1)
+    parser.search("aquatic photoprotection")
     parser.parse_articles()
     parser.save() # Check #home/.open_parser
 ```
