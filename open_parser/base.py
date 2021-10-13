@@ -47,6 +47,7 @@ class Article(object):
 
     def save(self, loc):
         with open(os.path.join(loc, 'article.json'), 'w',encoding='utf-8') as f:
+            print(loc)
             json.dump(self.to_dict(), f, indent=3)        
 
 class Retriever(object):

@@ -15,7 +15,15 @@ class Biorxiv(Retriever):
     def __init__(self) -> None:
         super().__init__(journal='biorxiv', base_url=URL['base'], search_url=URL['search'])
         self.num_pages = 0
-        self.meta = {'author':'DC.Contributor', 'citation_date':'citation_publication_date','publication_date':'DC.Date', 'doi':'citation_doi','publisher':'DC.Publisher', 'access':'DC.AccessRights','link':'citation_full_html_url','pdf':'citation_pdf_url'}
+        self.meta = {
+            'author':'DC.Contributor', 
+            'citation_date':'citation_publication_date',
+            'publication_date':'DC.Date', 
+            'doi':'citation_doi',
+            'publisher':'DC.Publisher', 
+            'access':'DC.AccessRights',
+            'link':'citation_full_html_url',
+            'pdf':'citation_pdf_url'}
         self.levels = {0:'h2',1:'h3',2:'h4',3:'h5',4:'p'}
 
     def get_num_pages(self, page_soup):
@@ -77,8 +85,6 @@ class Biorxiv(Retriever):
         return Meta(**data)
 
     def get_sections(self, soup, level=0):
-        # TO DO: Check repeated paragraphs in Parent
-        print('TOOD: Check parent/paragraph logic')
         sections = soup.find_all(self.levels[level])
         if len(sections)==0 and level<4:
             return self.get_sections(soup, level+1)

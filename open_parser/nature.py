@@ -19,7 +19,7 @@ class Nature(Retriever):
             'author':'dc.creator', 
             'citation_date':'citation_online_date',
             'publication_date':'prism.publicationDate', 
-            'citation_doi':'citation_doi',
+            'doi':'citation_doi',
             'publisher':'citation_journal_title', 
             'article_type':'content.category.contentType',
             'pdf':'citation_pdf_url',
@@ -59,7 +59,7 @@ class Nature(Retriever):
         return links
 
     def get_page_soup(self, article_url):
-        page_html = request.urlopen(article_url+'.full').read().decode("utf-8")
+        page_html = request.urlopen(article_url).read().decode("utf-8")
         return BeautifulSoup(page_html, "lxml")
 
     def get_refs(self, page_soup):
