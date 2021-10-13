@@ -1,7 +1,7 @@
 Open Access Papers Parser
 ===============================
 
-version number: 0.0.1
+version number: 0.1.0
 author: Nikolay Tchakarov
 
 Overview
@@ -29,20 +29,20 @@ TBD
 
 Available Parsers:
 ------------------
-- Biorxiv: Searches on Biorxi and Medarxiv
+- Biorxiv: Searches on Biorxiv and Medarxiv
 - Nature: Searches on Scientific Reports, ISME and Nature Communications
+- PLOS
+- PNAS 
 
 Example
 -------
 ```
-from open_parser import Biorxiv, Nature
-biorxiv = Biorxiv()
-biorxiv.search("aquatic photoprotection", num_pages=1)
-biorxiv.parse_articles()
-biorxiv.save() # Check #home/.open_parser/bioarxiv
+from open_parser import Biorxiv, Nature, PNAS, PLOS
+engines = [Biorxiv, Nature, PNAS, PLOS]
 
-nature = Nature()
-nature.search("aquatic photoprotection", num_pages=1)
-nature.parse_articles()
-nature.save() # Check #home/.open_parser/nature
+for engine in engines:
+    parser = engine()
+    parser.search("aquatic photoprotection", num_pages=1)
+    parser.parse_articles()
+    parser.save() # Check #home/.open_parser
 ```

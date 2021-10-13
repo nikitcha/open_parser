@@ -2,10 +2,10 @@ import os
 import json
 import re
 from dataclasses import dataclass, field
-import datetime
+from tqdm import tqdm
 from urllib import request, parse
 
-from bs4 import BeautifulSoup, BeautifulStoneSoup
+from bs4 import BeautifulSoup
 
 @dataclass
 class Meta:
@@ -14,7 +14,8 @@ class Meta:
     link:str
     citation_date:str
     publication_date:str
-    publisher:str
+    journal:str=""
+    publisher:str=""
     pdf:str=""
     access:str="open"
     article_type:str='article'
@@ -59,8 +60,9 @@ class Retriever(object):
         self.query_url = "" # Query URL -> specific to every search query
         self.articles = articles
         self.article_links = article_links
+        self.levels = {0:'h2',1:'h3',2:'h4',3:'h5',4:'p'}
 
-        self.parser_home = os.path.join(os.environ['HOMEPATH'], '.article_parser')
+        self.parser_home = os.path.join(os.environ['HOMEPATH'], '.open_parser')
         if not os.path.exists(self.parser_home):
             os.mkdir(self.parser_home)        
         self.savedir = os.path.join(self.parser_home, journal)
@@ -79,7 +81,8 @@ class Retriever(object):
         
     def parse_articles(self):
         self.articles = []
-        for article in self.article_links:
+        for i in tqdm(range(len(self.article_links)), desc='Parsing {}'.format(self.journal.capitalize())):
+            article = self.article_links[i]            
             self.articles.append(self.parse_article(article))
 
     def parse_article(self, article_link:dict)->Article:
@@ -89,23 +92,49 @@ class Retriever(object):
         refs = self.get_refs(page_soup)
         return Article(meta=meta, sections=sections, title=article_link.title, refs=refs)
 
-    def _search(self, query):
-        self.query_url = self.get_query_url(query)
-        page_html = request.urlopen(self.query_url).read().decode("utf-8")
+    def get_page_html(self, url)->str:
+        return request.urlopen(url).read().decode("utf-8")
+
+    def get_page_soup(self, article_url)->BeautifulSoup:
+        page_html = self.get_page_html(article_url)
         return BeautifulSoup(page_html, "lxml")
-        
-    def get_query_url(self, query):
+
+    def get_query_url(self, query)->str:
         return self.search_url.format(parse.quote(query))
 
+    def _search(self, query)->BeautifulSoup:
+        self.query_url = self.get_query_url(query)
+        return self.get_page_soup(self.query_url)
+
+    def get_page_articles(self, page_soup, page=0):
+        if page==0:
+            links = self.get_page_links(page_soup)            
+        else:
+            if self.num_pages>0 and page<=self.num_pages:
+                page_url = self.query_url + '?page={}'.format(page)
+                page_soup = self.get_page_soup(page_url)
+                links = self.get_page_links(page_soup)
+        return links        
+        
+    def search(self, query, max_pages=1):
+        page_soup = self._search(query)
+        self.get_num_pages(page_soup)
+        self.article_links = []
+        for i in range(max_pages):
+            self.article_links.extend(self.get_page_articles(page_soup,i))
+
     # Each class instance should overwrite these methods
-    def get_page_soup(self, article_url)->BeautifulStoneSoup:
-        pass
+    def get_num_pages(self, soup:BeautifulSoup)->None:
+        return None
+
+    def get_page_links(self, soup:BeautifulSoup)->list[ArticleLink]:
+        return None
 
     def get_meta(self, soup:BeautifulSoup)->Meta:
-        pass
+        return None
 
     def get_sections(self, soup:BeautifulSoup)->list[dict]:
-        pass
+        return []        
 
     def get_refs(self, soup:BeautifulSoup)->list[Reference]:
-        pass        
+        return []        

@@ -2,3 +2,6 @@
 sphinx
 sphinx_rtd_theme
 pypi-publisher
+requests_html
+beautifulsoup4
+tqdm
