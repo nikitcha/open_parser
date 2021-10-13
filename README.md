@@ -27,6 +27,11 @@ Contributing
 
 TBD
 
+Available Parsers:
+------------------
+- Biorxiv: Searches on Biorxi and Medarxiv
+- Nature: Searches on Scientific Reports, ISME and Nature Communications
+
 Example
 -------
 ```
@@ -40,5 +45,4 @@ nature = Nature()
 nature.search("aquatic photoprotection", num_pages=1)
 nature.parse_articles()
 nature.save() # Check #home/.open_parser/nature
-
 ```
