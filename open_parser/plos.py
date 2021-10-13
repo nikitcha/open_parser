@@ -56,9 +56,11 @@ class PLOS(Retriever):
                 data.update({k:els})
 
         # Add PDF
-        breakpoint()
-        link = page_soup.find('a',{'id':"downloadPdf"})
-        data.update({'pdf':self.base_url+link.get('href')})
+        try:
+            link = page_soup.find('a',{'id':"downloadPdf"})
+            data.update({'pdf':self.base_url+link.get('href')})
+        except:
+            print('Could not find PDF')
 
         # Add link
         link = page_soup.find('meta',{'property':'og:url'})
