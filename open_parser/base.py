@@ -116,12 +116,16 @@ class Retriever(object):
                 links = self.get_page_links(page_soup)
         return links        
         
-    def search(self, query, max_pages=1):
+    def search(self, query, page_range=[1,1]):
         page_soup = self._search(query)
         self.get_num_pages(page_soup)
-        self.article_links = []
-        for i in range(max_pages):
-            self.article_links.extend(self.get_page_articles(page_soup,i))
+        article_links = []
+        for i in range(page_range[0],page_range[1]+1):
+            article_links.extend(self.get_page_articles(page_soup,i))
+        # Remove articles that have been already parsed
+        available = os.listdir(self.savedir)
+        self.article_links = [link for link in article_links if self.filename(link) not in available]
+
 
     # Each class instance should overwrite these methods
     def get_num_pages(self, soup:BeautifulSoup)->None:

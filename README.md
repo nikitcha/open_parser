@@ -20,7 +20,7 @@ To install use pip (not plublished yet):
 Or clone the repo:
 
     $ git clone https://github.com/nikitcha/open_parser.git
-    $ python setup.py install
+    $ pip install open_parser
     
 Contributing
 ------------
