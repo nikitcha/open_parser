@@ -3,6 +3,17 @@ from requests_html import  HTMLSession
 from .base import Retriever,  Meta, ArticleLink
 import time 
 
+'''
+#loop = asyncio.new_event_loop()
+#asyncio.set_event_loop(loop)
+
+if asyncio.get_event_loop().is_running(): # Only patch if needed (i.e. running in Notebook, Spyder, etc)
+    import nest_asyncio
+    nest_asyncio.apply()
+loop = asyncio.get_running_loop()
+asession = AsyncHTMLSession(loop=loop)
+'''
+
 session = HTMLSession()
 URL = {'base':"https://journals.plos.org",
        'search':"https://journals.plos.org/plosone/search?q={}&page=1",
@@ -38,12 +49,23 @@ class PLOS(Retriever):
             article_links.append(ArticleLink(title=link.text, url=self.base_url+uri, doi=doi))
         return article_links
        
-    def _search(self, query)->BeautifulSoup:
+    '''
+    async def _asearch(self, query)->BeautifulSoup:
         self.query_url = self.get_query_url(query)
-        r = session.get(self.query_url)
-        r.html.render()        
+        r = await asession.get(self.query_url)
+        await r.html.arender()        
         time.sleep(1)
         return BeautifulSoup(r.html.html, "lxml")
+
+    def _search(self, query)->BeautifulSoup:
+        return asyncio.run(self._asearch(query))
+    '''
+    
+    def _search(self, query)->BeautifulSoup:
+        self.query_url = self.get_query_url(query)
+        res = session.get(self.query_url)
+        res.html.render(wait=1,sleep=1)        
+        return BeautifulSoup(res.html.html, "lxml")
 
     def get_meta(self, page_soup)->Meta:
         data = {}

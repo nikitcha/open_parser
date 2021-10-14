@@ -1,7 +1,7 @@
 from .base import Retriever, Meta, ArticleLink
 
 URL = {'base':"https://www.biorxiv.org",
-       'search':"https://www.biorxiv.org/search/{}%20jcode%3Amedrxiv%7C%7Cbiorxiv%20numresults%3A10%20sort%3Arelevance-rank",
+       'search':"https://www.biorxiv.org/search/{}%20jcode%3Amedrxiv%7C%7Cbiorxiv%20numresults%3A25%20sort%3Arelevance-rank",
         }
 
 class Biorxiv(Retriever):
