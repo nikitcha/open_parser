@@ -108,23 +108,13 @@ class Retriever(object):
         self.query_url = self.get_query_url(query)
         return self.get_page_soup(self.query_url)
 
-    def get_page_articles(self, page_soup, page=0):
-        if page<2:
-            links = self.get_page_links(page_soup)            
-        else:
-            if self.num_pages>1 and page<=self.num_pages:
-                assert 1==2, "Pagination not implemented"
-                page_url = self.query_url + '?page={}'.format(page)
-                page_soup = self.get_page_soup(page_url)
-                links = self.get_page_links(page_soup)
-        return links        
-        
-    def search(self, query, page_range=[1,1]):
+    def search(self, query, page_range=[0,1]):
         page_soup = self._search(query)
         self.get_num_pages(page_soup)
-        article_links = []
+        article_links = self.get_page_links(page_soup)
         for i in range(page_range[0],page_range[1]+1):
-            article_links.extend(self.get_page_articles(page_soup,i))
+            if i>1:
+                print('Pagination not implemented')
         # Remove articles that have been already parsed
         available = os.listdir(self.savedir)
         self.article_links = [link for link in article_links if self.filename(link) not in available]

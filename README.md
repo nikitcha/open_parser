@@ -36,13 +36,7 @@ Available Parsers:
 
 Example
 -------
+In command line:
 ```
-from open_parser import Biorxiv, Nature, PNAS, PLOS
-engines = [Biorxiv, Nature, PNAS, PLOS]
-
-for engine in engines:
-    parser = engine()
-    parser.search("aquatic photoprotection")
-    parser.parse_articles()
-    parser.save() # Check #home/.open_parser
+python -m open_parser.search nature "structural white color"
 ```

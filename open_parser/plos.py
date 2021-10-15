@@ -16,7 +16,7 @@ asession = AsyncHTMLSession(loop=loop)
 
 session = HTMLSession()
 URL = {'base':"https://journals.plos.org",
-       'search':"https://journals.plos.org/plosone/search?q={}&page=1",
+       'search':"https://journals.plos.org/plosone/search?q={}",
         }
 
 class PLOS(Retriever):
