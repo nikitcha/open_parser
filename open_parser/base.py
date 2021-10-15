@@ -62,7 +62,7 @@ class Retriever(object):
         self.article_links = article_links
         self.levels = {0:'h2',1:'h3',2:'h4',3:'h5',4:'p'}
         if env=='dropbox':
-            self.parser_home = os.path.join(os.environ['HOMEPATH'], 'Dropbox (CEEBIOS)',"Dossier de l'équipe CEEBIOS","29_Biomig","_Lot 2 - Matériauthèque & Moteur","Article Database")
+            self.parser_home = os.path.join(os.environ['HOMEPATH'], 'Dropbox (CEEBIOS)',"Dossier de l'équipe CEEBIOS","MdR_DB")
         else:
             self.parser_home = os.path.join(os.environ['HOMEPATH'], '.open_parser')
         if not os.path.exists(self.parser_home):
