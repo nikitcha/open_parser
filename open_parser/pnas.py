@@ -5,7 +5,7 @@ import time
 
 session = HTMLSession()
 URL = {'base':"https://www.pnas.org/",
-       'search':"https://www.pnas.org/search/{}%20content_type%3Ajournal%20numresults%3A25%20sort%3Arelevance-rank",
+       'search':"https://www.pnas.org/search/{}%20content_type%3Ajournal%20numresults%3A25%20sort%3Arelevance-rank?page=1",
         }
 
 class PNAS(Retriever):
