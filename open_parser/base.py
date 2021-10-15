@@ -52,7 +52,7 @@ class Article(object):
             json.dump(self.to_dict(), f, indent=3)        
 
 class Retriever(object):
-    def __init__(self, journal:str, base_url:str, search_url:str, articles:list[Article]=[], article_links:list[ArticleLink]=[]) -> None:
+    def __init__(self, journal:str, base_url:str,search_url:str, articles:list[Article]=[], article_links:list[ArticleLink]=[],  env:str='dropbox') -> None:
         super().__init__()
         self.journal = journal
         self.base_url = base_url # Website
@@ -61,8 +61,10 @@ class Retriever(object):
         self.articles = articles
         self.article_links = article_links
         self.levels = {0:'h2',1:'h3',2:'h4',3:'h5',4:'p'}
-
-        self.parser_home = os.path.join(os.environ['HOMEPATH'], '.open_parser')
+        if env=='dropbox':
+            self.parser_home = os.path.join(os.environ['HOMEPATH'], 'Dropbox (CEEBIOS)',"Dossier de l'équipe CEEBIOS","29_Biomig","_Lot 2 - Matériauthèque & Moteur","Article Database")
+        else:
+            self.parser_home = os.path.join(os.environ['HOMEPATH'], '.open_parser')
         if not os.path.exists(self.parser_home):
             os.mkdir(self.parser_home)        
         self.savedir = os.path.join(self.parser_home, journal)
@@ -107,10 +109,11 @@ class Retriever(object):
         return self.get_page_soup(self.query_url)
 
     def get_page_articles(self, page_soup, page=0):
-        if page==0:
+        if page<2:
             links = self.get_page_links(page_soup)            
         else:
-            if self.num_pages>0 and page<=self.num_pages:
+            if self.num_pages>1 and page<=self.num_pages:
+                assert 1==2, "Pagination not implemented"
                 page_url = self.query_url + '?page={}'.format(page)
                 page_soup = self.get_page_soup(page_url)
                 links = self.get_page_links(page_soup)

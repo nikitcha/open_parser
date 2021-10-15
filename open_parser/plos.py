@@ -64,8 +64,10 @@ class PLOS(Retriever):
     def _search(self, query)->BeautifulSoup:
         self.query_url = self.get_query_url(query)
         res = session.get(self.query_url)
-        res.html.render(wait=1,sleep=1)        
-        return BeautifulSoup(res.html.html, "lxml")
+        res.html.render(wait=1,sleep=1)
+        html = res.html.html
+        soup = BeautifulSoup(html, "lxml")
+        return soup
 
     def get_meta(self, page_soup)->Meta:
         data = {}

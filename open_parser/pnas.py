@@ -5,13 +5,13 @@ import time
 
 session = HTMLSession()
 URL = {'base':"https://www.pnas.org/",
-       'search':"https://www.pnas.org/search/{}%20content_type%3Ajournal%20numresults%3A25%20sort%3Arelevance-rank?page=1",
+       'search':"https://www.pnas.org/search/{}%20content_type%3Ajournal%20numresults%3A25%20sort%3Arelevance-rank",
         }
 
 class PNAS(Retriever):
     def __init__(self) -> None:
         super().__init__(journal='pnas', base_url=URL['base'], search_url=URL['search'])
-        self.num_pages = 1
+        self.num_pages = 0
         self.meta = {
             'author':'citation_author', 
             'citation_date':'citation_date',
@@ -27,8 +27,13 @@ class PNAS(Retriever):
     def get_num_pages(self, page_soup):
         ul = page_soup.find('ul', {'class':'pager'})
         if ul:
-            a = ul.find('li',{'class':'pager-last last'}).find('a').get('href')
-            self.num_pages = int(a.split('?page=')[1])
+            try:
+                link = ul.find("li",{'class':'pager-current last'})
+                page = link.text
+            except:
+                link = ul.find("a",{'title':'Go to last page'})
+                page = link.get('href').split('?page=')[1]
+            self.num_pages = int(page)
                 
     def get_page_links(self, page_soup):
         article_links = []
