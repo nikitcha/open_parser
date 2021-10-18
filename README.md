@@ -33,6 +33,7 @@ Available Parsers:
 - Nature: Searches on Scientific Reports, ISME and Nature Communications
 - PLOS
 - PNAS 
+- The Royal Society Publishing
 
 Example
 -------
