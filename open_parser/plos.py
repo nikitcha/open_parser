@@ -16,7 +16,7 @@ asession = AsyncHTMLSession(loop=loop)
 
 session = HTMLSession()
 URL = {'base':"https://journals.plos.org",
-       'search':"https://journals.plos.org/plosone/search?q={}",
+       'search':"https://journals.plos.org/plosone/search?q={}&page=1",
         }
 
 class PLOS(Retriever):
@@ -98,7 +98,7 @@ class PLOS(Retriever):
         if len(sections)==0:
             return None
         if level==4:
-            return [s.text for s in sections]
+            return [s.text for s in sections if s.text]
         else:
             out = []
             for sec in sections:

@@ -6,6 +6,7 @@ from tqdm import tqdm
 from urllib import request, parse
 
 from bs4 import BeautifulSoup
+HOME_PATH = os.path.join('Dropbox (CEEBIOS)',"Dossier de l'équipe CEEBIOS","MdR_DB")
 
 @dataclass
 class Meta:
@@ -62,7 +63,7 @@ class Retriever(object):
         self.article_links = article_links
         self.levels = {0:'h2',1:'h3',2:'h4',3:'h5',4:'p'}
         if env=='dropbox':
-            self.parser_home = os.path.join(os.environ['HOMEPATH'], 'Dropbox (CEEBIOS)',"Dossier de l'équipe CEEBIOS","MdR_DB")
+            self.parser_home = os.path.join(os.environ['HOMEPATH'], HOME_PATH)
         else:
             self.parser_home = os.path.join(os.environ['HOMEPATH'], '.open_parser')
         if not os.path.exists(self.parser_home):
@@ -117,12 +118,13 @@ class Retriever(object):
                 print('Pagination not implemented')
         # Remove articles that have been already parsed
         available = os.listdir(self.savedir)
+        print(len(article_links))
         self.article_links = [link for link in article_links if self.filename(link) not in available]
 
 
     # Each class instance should overwrite these methods
     def get_num_pages(self, soup:BeautifulSoup)->None:
-        return None
+        return 1
 
     def get_page_links(self, soup:BeautifulSoup)->list[ArticleLink]:
         return None

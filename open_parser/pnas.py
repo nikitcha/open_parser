@@ -69,7 +69,7 @@ class PNAS(Retriever):
         if len(sections)==0:
             return None
         if level==4:
-            return [s.text for s in sections]
+            return [s.text for s in sections if s.text]
         else:
             out = []
             for sec in sections:

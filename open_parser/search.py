@@ -1,6 +1,6 @@
 import sys
-from open_parser import Biorxiv, Nature, PNAS, PLOS
-engines ={'biorxiv':Biorxiv, 'nature':Nature, 'pnas':PNAS, 'plos':PLOS}
+from open_parser import Biorxiv, Nature, PNAS, PLOS, RoyalSociety, IOP
+engines ={'biorxiv':Biorxiv, 'nature':Nature, 'pnas':PNAS, 'plos':PLOS, 'royal_society':RoyalSociety, 'iop':IOP}
 
 def search(term, journal):
     jname = journal.lower()
