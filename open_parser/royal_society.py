@@ -65,14 +65,20 @@ class RoyalSociety(Retriever):
         data.update({'article_type':page_soup.find('span',{'class':'citation__top__item article__tocHeading'}).text})
         return Meta(**data)
 
-    def get_sections(self, soup, level=0):
+    def get_sections(self,soup, level=0):
+        abstract = soup.find('div',{'class':'hlFld-Abstract'})
+        body = soup.find('div',{'class':'hlFld-Fulltext'})
+        return self._get_sections(abstract)+self._get_sections(body, level=1)
+
+
+    def _get_sections(self, soup, level=0):
         sections = soup.find_all(self.levels[level])
         try:
             sections = [sec for sec in sections if 'table-collapser' not in sec.get('class')[0]]
         except:
             x=0
         if len(sections)==0 and level<4:
-            return self.get_sections(soup, level+1)
+            return self._get_sections(soup, level+1)
         if len(sections)==0:
             return None
         if level==4:
@@ -88,7 +94,7 @@ class RoyalSociety(Retriever):
                 else:
                     end = str(sections[i+1])
                     div = BeautifulSoup(div[:div.rfind(end)], "lxml")               
-                part = {'title':sections[i].text, 'text':self.get_sections(div, level+1)}
+                part = {'title':sections[i].text, 'text':self._get_sections(div, level+1)}
                 if part['text']:
                     parse.append(part)
             return parse
